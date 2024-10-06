@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="send_question.css">
+    
+    <title>hduhelp</title>
+</head>
+
+
+<body>
+<!--                        获取session数据                                     -->
+    <script>
+        try {
+            var storedAccount = localStorage.getItem("account");
+            var account = JSON.parse(storedAccount);
+            // console.log(account);
+            var username = account.username;
+        }
+        catch(ex)
+        {
+            window.location.href = 'index.html';
+        }
+        // var username = "admin";
+    </script> 
+
+
+<!--                         导航栏                                      -->
+    <ul class = "nav-list" id = "Navigation_List">
+        <div class = "nav-left">
+
+            <li><a class = "hdu">HDU</a></li>
+            <li><a href = "home.html">主页</a></li>
+            <li><a href = "send_question.html" id = "active">发布问题</a></li>
+
+            <li>
+                <a href="#">More</a>
+                <ul class = "sub-nav">
+                    <li><a href="#">暂无更多</a></li>
+                </ul>
+            </li>
+        </div>
+    </ul>
+
+<!--                       用户信息栏                                    -->
+    <script>
+        Navigation = document.getElementById("Navigation_List");
+        Navigation.innerHTML +=  `<div class = "nav-right">
+                                    <li>
+                                        <a href="#">` + username + `</a>
+                                        <ul class = "sub-nav">
+                                            <li><a href = "#">我的信息</a></li>
+                                            <li><a href = "exit.html">退出</a></li>
+                                        </ul>
+                                    </li>
+                                </div>`
+    </script>
+
+
+
+
+
+    <div class="form-container">
+        <h2>提交新问题</h2>
+        <form id="submit-form">
+            <label for="title">问题标题：</label>
+            <input type="text" id="title" name="title" placeholder="请输入您的问题" required>
+
+            <label for="detail">详细描述：</label>
+            <textarea id="detail" name="detail" rows="5" placeholder="请提供更多详细信息..." required></textarea>
+
+            <label for="author_email">您的邮箱：</label>
+            <input type="email" id="author_email" name="author_email" placeholder="请输入您的邮箱" required>
+
+            <button type="submit">提交问题</button>
+        </form>
+    </div>
+
+
+    <script>
+
+        document.getElementById('submit-form').addEventListener('submit', function(event)
+        {
+            event.preventDefault(); // 阻止默认表单提交行为
+
+            var title = document.getElementById('title').value;
+            var detail = document.getElementById('detail').value;
+            var author_email = document.getElementById('author_email').value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://hduhelp.woshiluo.com/api/question', true);
+            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+            xhr.onreadystatechange = function()
+            {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 201)
+                    {
+                        alert('问题提交成功！');
+                        window.location.href = 'home.html';
+                    }
+                    else alert('提交问题时发生错误。');
+                }
+            };
+            
+
+            var currentDate = new Date(); // 创建一个 Date 对象，代表当前时间
+            var year = currentDate.getFullYear(); // 获取当前年份
+            var month = currentDate.getMonth() + 1; // 获取当前月份（加1）
+            var day = currentDate.getDate(); // 获取当前日期
+            var hours = currentDate.getHours(); // 获取当前小时
+            var minutes = currentDate.getMinutes(); // 获取当前分钟
+            var seconds = currentDate.getSeconds(); // 获取当前秒
+            var formattedDate = year + '-' + 
+                    (month < 10 ? '0' + month : month) + '-' + 
+                    (day < 10 ? '0' + day : day) + 'T' + 
+                    (hours < 10 ? '0' + hours : hours) + ':' + 
+                    (minutes < 10 ? '0' + minutes : minutes) + ':' + 
+                    (seconds < 10 ? '0' + seconds : seconds) + 'Z';
+
+            console.log(formattedDate); // 输出格式化后的当前时间
+
+            var data = {
+                            "title": title, 
+                            "detail": detail,
+                            "author": username,
+                            "created_at": formattedDate,
+                            "author_email": author_email,
+                            "answers": []
+                        };
+            console.log(data);
+            var data = JSON.stringify(data);
+            xhr.send(data);
+        });
+
+
+
+    </Script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hduhelp</title>
+</head>
+<body>
+
+    <script>
+        function getQueryParam(param)
+        {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        var questionId = getQueryParam('id');
+        console.log("Question ID:", questionId);
+
+        alert("This need a delete API");
+    
+        window.location.href = 'home.html';
+    
+    </script>
+</body>
+</html>

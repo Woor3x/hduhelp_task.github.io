@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hduhelp</title>
+    <link rel="stylesheet" href="question.css">
+</head>
+<body>
+
+<!--                        获取session数据                                     -->
+    <script>
+        try {
+            var storedAccount = localStorage.getItem("account");
+            var account = JSON.parse(storedAccount);
+            // console.log(account);
+            var username = account.username;
+        }
+        catch(ex)
+        {
+            alert(ex);
+            window.location.href = 'index.html';
+        }
+        // var username = "admin";
+    </script>
+
+
+
+    <div class="container" id="question-container">
+        <h1 class="question-title" id="question-title">问题标题</h1>
+        <div class="question-meta">
+            <span id="question-author">提问者: </span>
+            <span id="question-email">Email: </span>
+            <span id="question-time">时间: </span>
+        </div>
+        <div class="question-content" id="question-detail">问题内容</div>
+
+        <!-- 回答部分 -->
+        <div class="answer-section" id="answer-section">
+            <h2>回答</h2>
+            <!-- 动态添加回答 -->
+        </div>
+    
+
+
+        <!-- 写回答区域 -->
+        <div class="write-answer">
+            <h3>写回答</h3>
+            <input type="text" id="answer-author-email" placeholder="你的邮箱" required>
+            <textarea id="answer-content" rows="5" placeholder="请输入你的回答" required></textarea>
+            <button id="submit-answer">提交回答</button>
+        </div>
+    </div>
+
+
+    <script>
+//--------------------------------------------------动态添加回答------------------------------------------------------
+        function getQueryParam(param) {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        var questionId = getQueryParam('id');
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://hduhelp.woshiluo.com/api/question/' + questionId);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    var question = JSON.parse(xhr.responseText);
+                    // 填充问题信息
+                    document.getElementById("question-title").textContent = question['title'];
+                    document.getElementById("question-author").textContent = "提问者: " + question['author'];
+                    document.getElementById("question-email").textContent = " Email: " + question['author_email'];
+                    document.getElementById("question-time").textContent = " 时间: " + question['created_at'].slice(0, 10);
+                    document.getElementById("question-detail").textContent = question['detail'];
+
+                    // 填充回答
+                    var answerSection = document.getElementById("answer-section");
+                    question['answers'].forEach(function(answer) {
+                        var answerDiv = document.createElement("div");
+                        answerDiv.classList.add("answer");
+
+                        var answerMeta = document.createElement("div");
+                        answerMeta.classList.add("answer-meta");
+                        answerMeta.textContent = "回答者: " + answer.author_name + " email: " + answer.author_email + " 时间: " + answer.created_at.slice(0, 10);
+
+
+                        if (answer.is_best === true) { // 检查是否为最佳答案
+                            answerDiv.classList.add("best-answer");
+                            
+                            var star = document.createElement("span"); // 创建星星元素
+                            star.textContent = "★";
+                            star.classList.add("star");
+                            answerMeta.appendChild(star); // 将星星添加到回答元数据中
+                        }
+                    
+
+                        var answerContent = document.createElement("div");
+                        answerContent.classList.add("answer-content");
+                        answerContent.textContent = answer.content;
+
+                        answerDiv.appendChild(answerMeta);
+                        answerDiv.appendChild(answerContent);
+                        answerSection.appendChild(answerDiv);
+                    });
+                } else {
+                    console.error('AJAX请求错误:', xhr.status);
+                }
+            }
+        };
+        xhr.send();
+
+
+
+//--------------------------------------------------提交回答------------------------------------------------------
+        document.getElementById("submit-answer").addEventListener("click", function() {
+            var authorEmail = document.getElementById("answer-author-email").value;
+            var content = document.getElementById("answer-content").value;
+
+            // 在这里可以添加AJAX请求将回答提交到服务器
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://hduhelp.woshiluo.com/api/question/' + questionId + '/answer', true);
+            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+            xhr.onreadystatechange = function()
+            {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 201) alert('答案提交成功！');
+                    else alert('提交答案时发生错误。');
+                    // alert(xhr.status);
+                }
+            };
+
+            var currentDate = new Date(); // 创建一个 Date 对象，代表当前时间
+            var year = currentDate.getFullYear(); // 获取当前年份
+            var month = currentDate.getMonth() + 1; // 获取当前月份（加1）
+            var day = currentDate.getDate(); // 获取当前日期
+            var hours = currentDate.getHours(); // 获取当前小时
+            var minutes = currentDate.getMinutes(); // 获取当前分钟
+            var seconds = currentDate.getSeconds(); // 获取当前秒
+            var formattedDate = year + '-' + 
+                    (month < 10 ? '0' + month : month) + '-' + 
+                    (day < 10 ? '0' + day : day) + 'T' + 
+                    (hours < 10 ? '0' + hours : hours) + ':' + 
+                    (minutes < 10 ? '0' + minutes : minutes) + ':' + 
+                    (seconds < 10 ? '0' + seconds : seconds) + 'Z';
+
+            var data = {
+                            "content": content,
+                            "created_at": formattedDate,
+                            "author_email": authorEmail,
+                            "author_name": username,
+                            "question_id": Number(questionId),
+            };
+
+            // console.log(data);
+            var data = JSON.stringify(data);
+            xhr.send(data);
+            // 清空输入框
+            document.getElementById("answer-author-email").value = '';
+            document.getElementById("answer-content").value = '';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>hduhelp v1.0</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <script>
+    //检验是否有登录信息
+    try {
+      var storedAccount = localStorage.getItem("account");
+      var account = JSON.parse(storedAccount);
+      // console.log(account);
+      var username = account.username;
+      window.location.href = 'home.html';
+    }
+    catch(ex)
+    {
+      alert("直接去登陆吧 没接后端 用户名随意 密码:123456即可登录捏~");
+    }
+                          
+  </script>
+
+
+  <div class="container">
+    <div class="form-box">
+      <!-- 注册 -->
+      <div class="register-box hidden">
+        <h1>register</h1>
+        <input class="registerusername" type="text" placeholder="用户名">
+        <!--<input type="email" placeholder="邮箱">-->
+        <input class="registerpassword" type="password" placeholder="密码">
+        <input class="registerconfirm-password" type="password" placeholder="确认密码">
+        <button class="register-button">注册</button>
+      </div>
+      <!-- 登录 -->
+      <div class="login-box">
+        <h1>login</h1>
+        <input class="loginusername" type="text" placeholder="用户名">
+        <input class="loginpassword" type="password" placeholder="密码">
+        <button class="login-button">登录</button>
+      </div>
+    </div>
+    <div class="con-box left">
+      <h2>欢迎来到<span>HDU</span></h2>
+      <p>...<span>0.0</span>...</p>
+      <img src="images/3.png" alt="">
+      <p>已有账号</p>
+      <button class="go-login-button">去登录</button>
+    </div>
+    <div class="con-box right">
+      <h2>欢迎来到<span>HDU</span></h2>
+      <p>...<span>0.0</span>...</p>
+      <img src="images/3.png" alt="">
+      <p>没有账号？</p>
+      <button class="go-register-button">去注册</button>
+    </div>
+  </div>
+
+
+
+  <script>
+    // 要操作到的元素
+    let goLoginButton = document.querySelector('.go-login-button');
+    let goRegisterButton = document.querySelector('.go-register-button');
+    let formBox = document.querySelector('.form-box');
+    let registerBox = document.querySelector('.register-box');
+    let loginBox = document.querySelector('.login-box');
+
+    // 注册输入框
+    let usernameRegisterInput = document.querySelector('.registerusername');
+    let passwordRegisterInput = document.querySelector('.registerpassword');
+    let confirm_passwordRegisterInput = document.querySelector('.registerconfirm-password');
+
+    // 登录输入框
+    let usernameLoginInput = document.querySelector('.loginusername');
+    let passwordLoginInput = document.querySelector('.loginpassword');
+    
+    // 注册按钮
+    let registerButton = document.querySelector('.register-button');
+    
+    // 登录按钮
+    let loginButton = document.querySelector('.login-button');
+
+    // 去注册按钮点击事件
+    goRegisterButton.addEventListener('click', () => {
+      formBox.style.transform = 'translateX(80%)';
+      loginBox.classList.add('hidden');
+      registerBox.classList.remove('hidden');
+    });
+
+    // 去登录按钮点击事件
+    goLoginButton.addEventListener('click', () => {
+      formBox.style.transform = 'translateX(0%)';
+      registerBox.classList.add('hidden');
+      loginBox.classList.remove('hidden');
+    });
+
+
+
+    // 注册按钮点击事件
+    registerButton.addEventListener('click', () => {
+      alert("直接去登陆吧 没接后端 用户名随意 密码:123456即可登录捏~");
+
+/*
+      let sent = true;
+      let mistake = 0;
+
+
+      //判断输入是否为空
+      if (usernameRegisterInput.value === "")
+      {
+        alert("用户名不得为空!");
+        mistake++;
+        sent = false;
+      }
+
+      if (passwordRegisterInput.value === "" && mistake === 0)
+      {
+        alert("密码不得为空!");
+        mistake++;
+        sent = false;
+      }
+
+      if (confirm_passwordRegisterInput.value === "" && mistake === 0)
+      {
+        alert("确认密码不得为空!");
+        mistake++;
+        sent = false;
+      }
+
+
+      //判断输入是否有违禁字符
+      if (usernameRegisterInput.value.includes(" ") && mistake === 0)
+      {
+        alert("用户名中不能存在空格!");
+        mistake++;
+        sent = false;
+      }
+
+      if (passwordRegisterInput.value.includes(" ") && mistake === 0)
+      {
+        alert("密码中不能存在空格!");
+        mistake++;
+        sent = false;
+      }
+      
+      if (passwordRegisterInput.value != confirm_passwordRegisterInput.value && mistake === 0)
+      {
+          alert("两次密码输入不一致!");
+          mistake++;
+          sent = false;
+      }
+
+
+      if (sent)
+      {
+        let xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4)
+            {
+
+              if (xhr.status === 200)
+              {
+                // 请求发送成功，根据服务器端返回的响应结果来进行相应的操作
+                //console.log(xhr.responseText);
+                let response = JSON.parse(xhr.responseText);
+                // 响应结果
+                if (response.repetition === true) alert("用户名已被占用!");
+
+                if (response.repetition === false && response.register === true)
+                {
+                  alert("注册成功!!!");
+                  // 注册成功后将账号信息存储在会话存储中
+                  var account = {"username" : usernameRegisterInput.value,
+                                 "ip" : response.userIP};
+                  sessionStorage.setItem("account", JSON.stringify(account));
+                  window.location.href = 'homepage.html';
+                }
+              } 
+              else
+              {
+                  // 请求发送失败
+                  console.log("请求发送失败");
+              }
+            }
+            //else
+            //{
+            // 请求发送中
+            //}
+        }
+        xhr.open('POST', 'register.php', true);
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        let data = "username=" + usernameRegisterInput.value + "&password=" + passwordRegisterInput.value;
+        xhr.send(data);
+
+      }
+*/
+    });
+
+
+
+    // 登录按钮点击事件
+    loginButton.addEventListener('click', () => {
+      let check = true;
+      //判断输入是否为空
+      if (usernameLoginInput.value == "")
+      {
+        alert("用户名不得为空!");
+        check = false;
+      }
+
+      if (passwordLoginInput.value == "")
+      {
+        alert("密码不得为空!");
+        check = false;
+      }
+
+      if (passwordLoginInput.value != "123456")
+      {
+        alert("密码不正确!");
+        check = false;
+      }
+
+      if (usernameLoginInput.value != "" && passwordLoginInput.value === "123456")
+      {
+        alert("登录成功!!!");
+
+        // 登录成功后将账号信息存储在会话存储中
+        var account = {"username": usernameLoginInput.value};
+        localStorage.setItem("account", JSON.stringify(account));
+
+        window.location.href = 'home.html';
+      }
+  /*
+      let sent = true;
+      let mistake = 0;
+
+      //判断输入是否为空
+      if (usernameLoginInput.value == "")
+      {
+        alert("用户名不得为空!");
+        mistake++;
+        sent = false;
+      }
+
+      if (passwordLoginInput.value == "" && mistake == 0)
+      {
+        alert("密码不得为空!");
+        mistake++;
+        sent = false;
+      }
+      
+
+      if (sent)
+      {
+        let xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4)
+            {
+
+              if (xhr.status == 200)
+              {
+                // 请求发送成功，根据服务器端返回的响应结果来进行相应的操作
+                //console.log(xhr.responseText);
+                let response = JSON.parse(xhr.responseText);
+                // 响应结果
+                if (response.exist == false) alert("用户名不存在!");
+                if (response.exist == true && response.match == false) alert("密码不正确!");
+                if (response.exist && response.match)
+                {
+                  alert("登录成功!!!");
+
+                  // 登录成功后将账号信息存储在会话存储中
+                  var account = {"username": usernameLoginInput.value,
+                                 "ip" : response.userIP};
+                  sessionStorage.setItem("account", JSON.stringify(account));
+
+                  window.location.href = 'homepage.html';
+                }
+
+            } 
+            else
+            {
+                // 请求发送失败
+                console.log("请求发送失败");
+            }
+            }
+            //else
+            //{
+            // 请求发送中
+            //}
+        }
+        xhr.open('POST', 'login.php', true);
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        let data = "username=" + usernameLoginInput.value + "&password=" + passwordLoginInput.value;
+        xhr.send(data);
+      }
+
+*/
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+.nav-list {
+    background-color: #fff;
+    border-bottom: 1px solid #e2e2e2;
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between; /* 将导航项分为左右两侧 */
+    padding: 0 200px; /* 添加左右内边距 */
+}
+
+.nav-left, .nav-right {
+    display: flex; /* 用于将项横向排列 */
+}
+
+.nav-list li {
+    position: relative;
+}
+
+.nav-list .nav-left li a {
+    display: block;
+    font-weight: bold;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #acacac;
+    transition: background 0.3s;
+}
+
+.nav-list .nav-right li a {
+    display: block;
+    font-weight: bold;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #000000;
+    transition: background 0.3s;
+}
+
+.nav-list li a:hover {
+    background-color: #f0f0f0;
+}
+
+#active {
+    font-weight: bold; /* 加粗 */
+    color: #000000; /* 选中颜色 */
+}
+
+
+.nav-list li a.hdu {
+    font-size: 28px; /* 调大字体 */
+    color: blue; /* 设置为蓝色 */
+    pointer-events: none; /* 禁止选择 */
+    cursor: default; /* 改变光标为默认样式 */
+    margin-top: -10px; /* 向上移动 */
+}
+
+.nav-list li a.hdu:hover {
+    background-color: transparent; /* 悬停时不变色 */
+}
+
+.nav-list li .sub-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #e2e2e2;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li:hover .sub-nav {
+    display: block;
+}
+
+.sub-nav li a {
+    padding: 10px 20px;
+    white-space: nowrap;
+}
+
+.sub-nav li a:hover {
+    background-color: #f0f0f0;
+}
+
+
+
+
+
+
+
+
+
+/* 问题容器整体样式 */
+.question-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 居中所有问题框 */
+    width: 80%;
+    margin: 0 auto; /* 让容器居中 */
+    padding: 20px;
+}
+
+/* 每个问题框样式 */
+.question-item {
+    width: 100%;
+    max-width: 600px; /* 限制框的最大宽度 */
+    padding: 15px;
+    margin: 10px 0; /* 设置问题之间的间距 */
+    background-color: #fff;
+    border: 1px solid #e2e2e2; /* 设置边框 */
+    border-radius: 10px; /* 圆角边框 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+    transition: transform 0.3s ease; /* 鼠标悬停时的过渡效果 */
+}
+
+/* 去除链接的下划线样式 */
+.question-item {
+    text-decoration: none; /* 去除下划线 */
+    color: inherit; /* 保持链接与普通文本一样的颜色 */
+}
+
+.question-item:hover {
+    text-decoration: none; /* 悬停时仍然不显示下划线 */
+}
+
+/* 鼠标悬停时放大效果 */
+.question-item:hover {
+    transform: scale(1.02);
+}
+
+
+/* 问题标题样式 */
+.question-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+/* 问题描述的样式 */
+.question-detail {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+    display: block;
+}
+
+/* 问题时间的样式 */
+.question-time
+{
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.question-change
+{
+    font-size: 12px;
+    color: #4586f6;
+    display: flex;
+    justify-content: flex-end;
+}
+
+
+.question-delete
+{
+    font-size: 12px;
+    color: #4586f6;
+    display: flex;
+    justify-content: flex-end;
+}

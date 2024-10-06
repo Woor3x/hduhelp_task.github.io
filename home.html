@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="home.css">
+    
+    <title>hduhelp</title>
+</head>
+
+
+<body>
+<!--                        获取session数据                                     -->
+    <script>
+        try {
+            var storedAccount = localStorage.getItem("account");
+            var account = JSON.parse(storedAccount);
+            // console.log(account);
+            var username = account.username;
+        }
+        catch(ex)
+        {
+            window.location.href = 'index.html';
+        }
+        // var username = "admin";
+    </script>
+
+
+<!--                         导航栏                                      -->
+    <ul class = "nav-list" id = "Navigation_List">
+        <div class = "nav-left">
+
+            <li><a class = "hdu">HDU</a></li>
+            <li><a href = "home.html" id = "active">主页</a></li>
+            <li><a href = "send_question.html">发布问题</a></li>
+
+            <li>
+                <a href="#">More</a>
+                <ul class = "sub-nav">
+                    <li><a href="#">暂无更多</a></li>
+                </ul>
+            </li>
+        </div>
+    </ul>
+
+<!--                       用户信息栏                                    -->
+    <script>
+        Navigation = document.getElementById("Navigation_List");
+        Navigation.innerHTML +=  `<div class = "nav-right">
+                                    <li>
+                                        <a href="#">` + username + `</a>
+                                        <ul class = "sub-nav">
+                                            <li><a href = "#">我的信息</a></li>
+                                            <li><a href = "exit.html">退出</a></li>
+                                        </ul>
+                                    </li>
+                                </div>`
+    </script>
+
+
+
+
+<!--                           问题                                    -->
+    <div class="question-container" id="Question_List">
+        <a class="question-item" href="home.html" target="_blank">
+            <div>
+                <span class="question-title">This is a 小彩蛋.</span>
+                <br>
+                <span class="question-detail">flag{The_1oading_is_v3ry_sl0w}</span>
+                <br>
+                <span class = "question-time">2024-10-04 14:15:05</span>
+            </div>
+        </a>
+    </div>
+
+
+    <script>
+        var Loading_display = false;
+        var question_count = 10;
+        get_question(question_count); //初始问题列
+
+        function get_question(question_count)
+        {
+            if (Loading_display) return; // 如果正在加载，则不执行新的请求
+            Loading_display = true;
+            console.log(question_count);
+            var xhr = new XMLHttpRequest();
+            // 指定请求的方法和URL
+            xhr.open('GET', 'https://hduhelp.woshiluo.com/api/question');
+            // 定义响应处理函数
+            xhr.onreadystatechange = function()
+            {
+                if (xhr.readyState === XMLHttpRequest.DONE)
+                {
+                    if (xhr.status === 200)
+                    {
+                        // console.log('请求成功');
+                        // 处理返回的数据
+                        var questions = JSON.parse(xhr.responseText);
+                        Question_List = document.getElementById("Question_List");
+                        Question_List.innerHTML = ""; //重置问题列
+                        for (var i = 0; i < question_count && i < questions.length; i++) {
+                            var questionDiv = document.createElement('div');
+                            questionDiv.classList.add('question-item');
+
+                            var questionLink = document.createElement('a');
+                            questionLink.href = 'question.html?id=' + questions[i]['id'];
+                            questionLink.target = '_blank';
+                            questionLink.style = 'display: block; text-decoration: none; color: inherit;'
+
+                            var title = document.createElement('span');
+                            title.classList.add('question-title');
+                            title.textContent = questions[i]["title"];
+
+                            var detail = document.createElement('span');
+                            detail.classList.add('question-detail');
+                            detail.textContent = questions[i]["detail"];
+
+                            var time = document.createElement('span');
+                            time.classList.add('question-time');
+                            time.textContent = questions[i]["created_at"].slice(0, 10) + " " + questions[i]["created_at"].slice(11, 19);
+                            
+
+                            
+
+                            questionLink.appendChild(title);
+                            questionLink.appendChild(detail);
+                            questionLink.appendChild(time);
+
+                            if (username === questions[i]["author"])
+                            {
+                                var questionChange = document.createElement('a');
+                                questionChange.classList.add('question-change');
+                                questionChange.href = 'change_question.html?id=' + questions[i]['id'];
+                                questionChange.textContent = "修改";
+
+                                var questionDelete = document.createElement('a');
+                                questionDelete.classList.add('question-delete');
+                                questionDelete.href = 'delete_question.html?id=' + questions[i]['id'];
+                                questionDelete.textContent = "删除";
+
+                                questionLink.appendChild(questionChange);
+                                questionLink.appendChild(questionDelete);
+                            }
+
+
+                            questionDiv.appendChild(questionLink);
+                            Question_List.appendChild(questionDiv);
+
+                        }
+
+
+                    }
+                    else console.error('AJAX请求错误:', xhr.status);
+                    Loading_display = false; // 请求完成，重置加载状态
+                }
+            };
+            // 发送AJAX请求
+            xhr.send();
+        };
+
+        var Loading_count = false; // 添加标志位
+
+        window.addEventListener('scroll', function() {
+            var windowHeight = window.innerHeight;
+            var scrollY = window.scrollY;
+            var documentHeight = document.documentElement.scrollHeight;
+
+            // 检查是否已经到底并且没有在加载中
+            if (windowHeight + scrollY >= documentHeight - 50 && !Loading_count) { //手动留余量
+                // console.log("windowHeight:", windowHeight);
+                // console.log("scrollY:", scrollY);
+                // console.log("documentHeight:", documentHeight);
+                // console.log("down");
+
+                // 设置为加载中状态，防止重复触发
+                Loading_count = true;
+
+                // 增加问题数量
+                question_count += 10;
+
+                // 调用获取问题函数
+                get_question(question_count);
+
+                // 模拟延迟加载，假设问题加载后需要一些时间更新页面高度
+                setTimeout(function() {
+                    Loading_count = false; // 加载完成后恢复标志位
+                    documentHeight = document.documentElement.scrollHeight; // 强制更新页面高度
+                }, 500);  // 500ms 延迟，视实际加载时间而定
+            }
+        });
+        
+    </script>
+
+
+</body>
+</html>
